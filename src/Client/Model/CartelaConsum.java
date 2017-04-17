@@ -1,6 +1,6 @@
-package Model;
+package Client.Model;
 
-import Exceptions.OutOfIDsException;
+import Client.Exceptions.OutOfIDsException;
 
 /**
  * Created by Adrian on 15.04.2017.
