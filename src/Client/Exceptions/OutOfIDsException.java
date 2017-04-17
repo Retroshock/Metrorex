@@ -1,4 +1,4 @@
-package Exceptions;
+package Client.Exceptions;
 
 /**
  * Created by Adrian on 15.04.2017.
