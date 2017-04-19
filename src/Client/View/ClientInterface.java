@@ -9,7 +9,7 @@ import java.awt.*;
 public class ClientInterface extends JPanel{
 
     public BuyMenu buyMenu;
-
+    public ContCurent contCurent;
     public ClientInterface(){
         this.setLayout(new GridBagLayout());
 
@@ -20,10 +20,17 @@ public class ClientInterface extends JPanel{
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1;
         constraints.weighty = 1;
-        constraints.ipadx = 40;
+        constraints.ipadx = 10;
         constraints.ipady = 40;
-
         this.add(buyMenu,constraints);
+
+        contCurent = new ContCurent();
+        constraints = new GridBagConstraints();
+        constraints.gridx = 1;
+        constraints.ipadx = 200;
+        constraints.gridy = 0;
+        constraints.fill = GridBagConstraints.BOTH;
+        this.add(contCurent, constraints);
     }
 
 
