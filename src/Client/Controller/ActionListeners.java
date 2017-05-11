@@ -35,6 +35,7 @@ public class ActionListeners {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(new Date());
                 cal.add(Calendar.DATE, 30);
+                Controller.sendRequestToServer(Strings.refreshIDs);
                 Abonament abonament = new Abonament(new Date(), cal.getTime());
                 //TODO SEND REQUEST TO DB
                 abonament.setMessage(Strings.addToDatabaseRequest);
@@ -53,9 +54,11 @@ public class ActionListeners {
             public void actionPerformed(ActionEvent e) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(new Date());
-                cal.add(Calendar.DATE, 2);
+                cal.add(Calendar.DATE, 1);
+                Controller.sendRequestToServer(Strings.refreshIDs);
                 Abonament abonament = new Abonament(new Date(), cal.getTime());
                 abonament.setMessage(Strings.addToDatabaseRequest);
+                Controller.addAbonamentToInterface ( abonament );
                 Controller.sendRequestToServer(abonament);
                 //Controller.addAbonamentToDB(abonament);
             }
@@ -66,6 +69,7 @@ public class ActionListeners {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Controller.sendRequestToServer(Strings.refreshIDs);
                 CartelaConsum cartela = new CartelaConsum(10);
                 cartela.setMessage(Strings.addToDatabaseRequest);
                 Controller.addCartelaToInterface(cartela);
@@ -78,6 +82,7 @@ public class ActionListeners {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Controller.sendRequestToServer(Strings.refreshIDs);
                 CartelaConsum cartela = new CartelaConsum(2);
                 cartela.setMessage(Strings.addToDatabaseRequest);
                 Controller.addCartelaToInterface(cartela);

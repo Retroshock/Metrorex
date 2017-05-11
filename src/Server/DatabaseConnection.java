@@ -1,4 +1,4 @@
-package Server.Controller;
+package Server;
 
 import Client.Model.Abonament;
 import Client.Model.Valabilitate;
@@ -19,6 +19,7 @@ public class DatabaseConnection {
         try{
             Class.forName("com.mysql.jdbc.Driver");
             myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/cartele", username , password);
+
 //            Statement statement = myConn.createStatement();
 //            ResultSet resultSet = statement.executeQuery("SELECT * FROM cartele");
 //            while (resultSet.next()){

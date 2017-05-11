@@ -15,6 +15,7 @@ public class IDCounters {
     public static long tenId = 500000001;
     public static long twoId = 750000001;
 
+
     public static long getID(Type tip) throws OutOfIDsException {
         switch (tip) {
             case Day:{

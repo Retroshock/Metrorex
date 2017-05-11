@@ -16,6 +16,7 @@ public class CartelaConsum extends Cartela {
             tip = Type.Two;
         else
             tip = Type.Ten;
+        setId();
     }
 
     public Type getTip() {

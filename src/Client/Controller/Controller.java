@@ -52,17 +52,17 @@ public class Controller {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
+                initIDs();
                 updateContCurentFromDB();
 
                 //closeConnectionToServer();
             }
         }).start();
+    }
 
+    private static void initIDs() {
 
-
-
-
+        sendRequestToServer(Strings.refreshIDs);
 
     }
 
@@ -148,6 +148,13 @@ public class Controller {
         }
         if (ob instanceof String){
 
+        }
+        if (ob instanceof ArrayList){
+            ArrayList<Long> IDs = (ArrayList<Long>) ob;
+            IDCounters.monthId = IDs.get(0);
+            IDCounters.dayId = IDs.get(1);
+            IDCounters.tenId = IDs.get(2);
+            IDCounters.twoId = IDs.get(3);
         }
     }
 
