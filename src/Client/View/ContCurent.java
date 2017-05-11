@@ -2,7 +2,6 @@ package Client.View;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 
 /**
@@ -31,9 +30,7 @@ public class ContCurent extends JPanel {
                 , 1 );
         //Exemplu de adaugare in tabel
         //TODO Make it so it shows the entries from database in controller
-        columnModel.addRow(new Object[] {10, "Cartela", "null", 2, "20/10/2014"});
-        columnModel.addRow(new Object[] {10, "Abonament", "19/11/2014", "null", "20/10/2014"});
-        columnModel.addRow(new Object[] {10, "Cartela", "null", 2, "20/10/2014"});
+
         table = new JTable(columnModel);
         table.sizeColumnsToFit(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
@@ -49,7 +46,18 @@ public class ContCurent extends JPanel {
         scrollPane.setVisible(true);
         this.add(scrollPane, constraints);
 
-
+        updateEntries(new Object[] {10, "Cartela", "null", 2, "20/10/2014"});
+        updateEntries(new Object[] {10, "Abonament", "19/11/2014", "null", "20/10/2014"});
+        updateEntries(new Object[] {10, "Cartela", "null", 2, "20/10/2014"});
 
     }
+
+    public void updateEntries(Object[] obj){
+        columnModel.addRow(obj);
+        table = new JTable(columnModel);
+        table.sizeColumnsToFit(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        //scrollPane.removeAll();
+        scrollPane.setViewportView(table);
+    }
+
 }

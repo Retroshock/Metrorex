@@ -25,7 +25,10 @@ public class IDCounters {
                 return dayId;
             }
             case Month:{
-
+                if (monthId < MONTH_MAX)
+                    monthId++;
+                else
+                    throw new OutOfIDsException();
                 return monthId;
 
             }

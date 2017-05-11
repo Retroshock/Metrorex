@@ -9,10 +9,10 @@ import java.awt.*;
 public class BuyMenu extends JPanel{
 
     private JLabel title;
-    public JButton buyMonthBtn;
-    public JButton buyDayBtn;
-    public JButton buyTenBtn;
-    public JButton buyTwoBtn;
+    private JButton buyMonthBtn;
+    private JButton buyDayBtn;
+    private JButton buyTenBtn;
+    private JButton buyTwoBtn;
 
     public BuyMenu(){
         this.setLayout(new GridBagLayout());
@@ -71,6 +71,21 @@ public class BuyMenu extends JPanel{
         constraints.weightx = 1;
         this.add(buyTwoBtn, constraints);
 
+    }
 
+    public JButton getBuyMonthBtn() {
+        return buyMonthBtn;
+    }
+
+    public JButton getBuyDayBtn() {
+        return buyDayBtn;
+    }
+
+    public JButton getBuyTenBtn() {
+        return buyTenBtn;
+    }
+
+    public JButton getBuyTwoBtn() {
+        return buyTwoBtn;
     }
 }

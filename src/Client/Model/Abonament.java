@@ -12,15 +12,16 @@ public class Abonament extends Cartela{
     private Type tip;
     private Valabilitate valabilitate;
 
-    Abonament(Date start, Date end){
+    public Abonament(){
+
+    }
+
+    public Abonament(Date start, Date end){
         valabilitate = new Valabilitate(start, end);
-        int diffInDays =(int)( ( valabilitate.getEnd().getTime() - valabilitate.getStart().getTime() ) / (1000 * 60 * 60 * 24) );
-        if (diffInDays > 1)
-            tip = Type.Month;
-        else
-            tip = Type.Day;
+        setTip();
         setId();
     }
+
 
     public Type getTip() {
         return tip;
@@ -38,5 +39,21 @@ public class Abonament extends Cartela{
             e.printStackTrace();
         }
 
+    }
+
+    public void manualId(long id){
+        this.id = id;
+    }
+
+    public void setTip() {
+        int diffInDays =(int)( ( valabilitate.getEnd().getTime() - valabilitate.getStart().getTime() ) / (1000 * 60 * 60 * 24) );
+        if (diffInDays > 1)
+            tip = Type.Month;
+        else
+            tip = Type.Day;
+    }
+
+    public void setValabilitate(Valabilitate valabilitate) {
+        this.valabilitate = valabilitate;
     }
 }

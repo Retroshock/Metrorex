@@ -10,7 +10,7 @@ public class CartelaConsum extends Cartela {
     private Type tip;
     private int nrCalatorii;
 
-    CartelaConsum(int nrCalatorii){
+    public CartelaConsum(int nrCalatorii){
         this.nrCalatorii = nrCalatorii;
         if (nrCalatorii == 2)
             tip = Type.Two;

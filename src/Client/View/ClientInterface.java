@@ -8,11 +8,12 @@ import java.awt.*;
  */
 public class ClientInterface extends JPanel{
 
-    public BuyMenu buyMenu;
-    public ContCurent contCurent;
+    private BuyMenu buyMenu;
+    private ContCurent contCurent;
     public ClientInterface(){
         this.setLayout(new GridBagLayout());
 
+        //Instantiez meniul de cumparare
         buyMenu = new BuyMenu();
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -24,6 +25,7 @@ public class ClientInterface extends JPanel{
         constraints.ipady = 40;
         this.add(buyMenu,constraints);
 
+        //Instantiez fereastra cu cartelele existente, cumparate de utilizator
         contCurent = new ContCurent();
         constraints = new GridBagConstraints();
         constraints.gridx = 1;
@@ -38,5 +40,13 @@ public class ClientInterface extends JPanel{
     public void paint(Graphics g) {
         super.paint(g);
 
+    }
+
+    public BuyMenu getBuyMenu() {
+        return buyMenu;
+    }
+
+    public ContCurent getContCurent() {
+        return contCurent;
     }
 }

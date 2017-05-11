@@ -1,11 +1,12 @@
 package Client.Model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Adrian on 15.04.2017.
  */
-public class Valabilitate {
+public class Valabilitate implements Serializable {
     private Date start, end;
 
     public Valabilitate(Date start, Date end){
