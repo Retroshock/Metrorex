@@ -155,7 +155,18 @@ public class ServerController {
                             }
                         }
                         if (cartela instanceof CartelaConsum) {
-                            cartela = existsInDB(cartela, dbConnection.getMyConn());
+                            if (cartela != null)
+                                if (((CartelaConsum) cartela).getNrCalatorii() > 0){
+                                    updateNrCalatoriiInDB((CartelaConsum)input, dbConnection.getMyConn());
+                                    return Strings.cardValidatedString;
+                                }
+                                else{
+                                    removeCardFromDB(cartela);
+                                    return Strings.outOfRidesString;
+                                }
+                            else{
+                                return Strings.cardDoesNotExistInDB;
+                            }
                         }
                     }
                     else{
@@ -185,13 +196,13 @@ public class ServerController {
 
     }
 
-    private static void subtractOneFromCardInDB(CartelaConsum cartela, Connection myConn) {
+    private static void updateNrCalatoriiInDB(CartelaConsum cartela, Connection myConn) {
         try{
-            String query = "SELECT * FROM cartele WHERE ID = ?";
+            String query = "UPDATE cartele SET NrCalatorii = ? WHERE ID = ? ";
             PreparedStatement prepSt = myConn.prepareStatement(query);
-            prepSt.setLong(1, cartela.getId());
-            ResultSet rs = prepSt.executeQuery();
-
+            prepSt.setInt(1, cartela.getNrCalatorii());
+            prepSt.setLong(2, cartela.getId());
+            prepSt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }

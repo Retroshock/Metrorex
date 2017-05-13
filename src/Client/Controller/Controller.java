@@ -162,6 +162,11 @@ public class Controller {
                     view.getClientInterface().getResponseFromServer().setText(Strings.expiredCardString);
                     break;
                 }
+                case Strings.outOfRidesString: {
+                    view.getClientInterface().getResponseFromServer().setText(Strings.outOfRidesString);
+                    break;
+                }
+
             }
         }
         if (ob instanceof ArrayList) {
