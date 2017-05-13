@@ -53,6 +53,8 @@ public class Abonament extends Cartela{
             tip = Type.Day;
     }
 
+
+
     public void setValabilitate(Valabilitate valabilitate) {
         this.valabilitate = valabilitate;
     }

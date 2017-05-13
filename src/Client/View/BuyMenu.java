@@ -13,6 +13,7 @@ public class BuyMenu extends JPanel{
     private JButton buyDayBtn;
     private JButton buyTenBtn;
     private JButton buyTwoBtn;
+    private JButton validationBtn;
 
     public BuyMenu(){
         this.setLayout(new GridBagLayout());
@@ -24,11 +25,10 @@ public class BuyMenu extends JPanel{
     @Override
     public void paint(Graphics g){
         super.paint(g);
-
     }
 
     private void initializeText() {
-        title = new JLabel("<html><div style='text-align: center;'>" + "Cumpara: " + "</div></html>");
+        title = new JLabel("<html><div style='text-align: center; width: 100%;'>" + "Cumpara: " + "</div></html>");
     }
 
     private void initializeButtons(){
@@ -36,6 +36,8 @@ public class BuyMenu extends JPanel{
         buyMonthBtn = new JButton("Abonament de o luna");
         buyTenBtn = new JButton("Cartela 10 calatorii");
         buyTwoBtn = new JButton("Cartela 2 calatorii");
+        validationBtn = new JButton("Valideaza cartela!");
+        validationBtn.setEnabled(false);
     }
 
     private void initializeConstraints() {
@@ -71,6 +73,12 @@ public class BuyMenu extends JPanel{
         constraints.weightx = 1;
         this.add(buyTwoBtn, constraints);
 
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.weightx = 1;
+        this.add(validationBtn, constraints);
+
     }
 
     public JButton getBuyMonthBtn() {
@@ -87,5 +95,9 @@ public class BuyMenu extends JPanel{
 
     public JButton getBuyTwoBtn() {
         return buyTwoBtn;
+    }
+
+    public JButton getValidationBtn() {
+        return validationBtn;
     }
 }

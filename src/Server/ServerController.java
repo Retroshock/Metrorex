@@ -1,17 +1,16 @@
 package Server;
 
+import Client.Constants.Numbers;
 import Client.Constants.Strings;
-import Client.Model.Abonament;
-import Client.Model.Cartela;
-import Client.Model.CartelaConsum;
-import Client.Model.IDCounters;
+import Client.Model.*;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.Date;
 
 /**
  * Created by Adrian on 10.05.2017.
@@ -25,23 +24,22 @@ public class ServerController {
     private static DatabaseConnection dbConnection;
 
     public static void main(String[] args) {
-        try{
+        try {
             DatabaseConnection.openDatabase();
 
 
             serverSocket = new ServerSocket(9002);
 
 
-
-            while (true){
+            while (true) {
 
                 socket = serverSocket.accept();
                 objectInputStream = new ObjectInputStream(socket.getInputStream());
                 Object input = null;
                 try {
                     input = objectInputStream.readObject();
-                    if (input instanceof String){
-                        if(((String)input).equals(Strings.exitRequest)){
+                    if (input instanceof String) {
+                        if (((String) input).equals(Strings.exitRequest)) {
                             objectInputStream.close();
                             socket.close();
                             break;
@@ -65,7 +63,7 @@ public class ServerController {
 
     }
 
-    private static ArrayList<Long> addCurrentIDs (Connection myConn){
+    private static ArrayList<Long> addCurrentIDs(Connection myConn) {
         ArrayList<Long> IDs = new ArrayList<>(4);
         String getMonthID = "select max(ID) ID from cartele where Tip = 'Abonament' and datediff(EndDate, StartDate) > 29;";
         String getDayID = "select max(ID) ID from cartele where Tip = 'Abonament' and datediff(EndDate, StartDate) = 1;";
@@ -76,37 +74,37 @@ public class ServerController {
             ResultSet resultSet;
             //result pentru month
             resultSet = statement.executeQuery(getMonthID);
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 long temp = resultSet.getInt("ID");
 
-                IDs.add(temp>IDCounters.monthId? temp : IDCounters.monthId);
+                IDs.add(temp > IDCounters.monthId ? temp : IDCounters.monthId);
             }
             statement.close();
 
             statement = myConn.createStatement();
             //result pentru day
-            resultSet =statement.executeQuery(getDayID);
-            if (resultSet.next()){
+            resultSet = statement.executeQuery(getDayID);
+            if (resultSet.next()) {
                 long temp = resultSet.getInt("ID");
-                IDs.add(temp>IDCounters.dayId? temp : IDCounters.dayId);
+                IDs.add(temp > IDCounters.dayId ? temp : IDCounters.dayId);
             }
             statement.close();
 
             statement = myConn.createStatement();
             //result pentru ten
-            resultSet =statement.executeQuery(getTenID);
-            if (resultSet.next()){
+            resultSet = statement.executeQuery(getTenID);
+            if (resultSet.next()) {
                 long temp = resultSet.getInt("ID");
-                IDs.add(temp>IDCounters.tenId? temp : IDCounters.tenId);
+                IDs.add(temp > IDCounters.tenId ? temp : IDCounters.tenId);
             }
             statement.close();
 
             statement = myConn.createStatement();
             //result pentru two
-            resultSet =statement.executeQuery(getTwoID);
-            if (resultSet.next()){
+            resultSet = statement.executeQuery(getTwoID);
+            if (resultSet.next()) {
                 long temp = resultSet.getInt("ID");
-                IDs.add(temp>IDCounters.twoId? temp : IDCounters.twoId);
+                IDs.add(temp > IDCounters.twoId ? temp : IDCounters.twoId);
             }
             resultSet.close();
             statement.close();
@@ -120,44 +118,66 @@ public class ServerController {
     private static Object processRequest(Object input) {
         Cartela cartela;
         String message;
-        if (input instanceof Cartela){
-            cartela =(Cartela) input;
+        if (input instanceof Cartela) {
+            cartela = (Cartela) input;
             message = cartela.getMessage();
             // verifica mesajul primit si proceseaza requestul in functie de tipul cartelei
-            switch (message){
-                case Strings.addToDatabaseRequest:{
+            switch (message) {
+                case Strings.addToDatabaseRequest: {
                     if (cartela instanceof Abonament) {
-                        Abonament tempAb = (Abonament)cartela;
+                        Abonament tempAb = (Abonament) cartela;
                         addAbonamentToDB(tempAb);
                     }
-                    if (cartela instanceof CartelaConsum){
-                        CartelaConsum tempCart = (CartelaConsum)cartela;
+                    if (cartela instanceof CartelaConsum) {
+                        CartelaConsum tempCart = (CartelaConsum) cartela;
                         addCartelaConsumToDB(tempCart);
                     }
                     break;
                 }
                 case Strings.validateCardRequest: {
-                    if (cartela instanceof Abonament) {
-                        //TODO VERIFICA PENTRU ABONAMENT
+                    if ((cartela = existsInDB(cartela,dbConnection.getMyConn()))!= null){
+                        if (cartela instanceof Abonament) {
+
+                            Date plus15 = new Date();
+                            if (plus15.before(((Abonament) cartela).getValabilitate().getEnd())) {
+                                plus15.setTime(plus15.getTime() + Numbers.ONE_MINUTE_IN_MILLIS * 15);
+                                AbonamentsTimer.refreshEntries();
+                                if (AbonamentsTimer.checkAbonament((Abonament) cartela) == -1) {
+                                    ValidationPair vp = new ValidationPair((Abonament) cartela, plus15);
+                                    AbonamentsTimer.addValidationPair(vp);
+                                    return Strings.cardValidatedString;
+                                } else {
+                                    return Strings.cannotValidateForNowString;
+                                }
+                            } else {
+                                removeCardFromDB(cartela);
+                                return Strings.expiredCardString;
+                            }
+                        }
+                        if (cartela instanceof CartelaConsum) {
+                            cartela = existsInDB(cartela, dbConnection.getMyConn());
+                        }
                     }
-                    if (cartela instanceof CartelaConsum){
-                        //TODO VERIFICA PENTRU CARTELA
+                    else{
+                        return Strings.cardDoesNotExistInDB;
+                        //return carteleFromDB(dbConnection.getMyConn());
                     }
+
                     break;
                 }
 
             }
-        }
-        else if (input instanceof String){
-            message = (String)input;
-            switch (message){
-                case Strings.refreshIDs:{
+        } else if (input instanceof String) {
+            message = (String) input;
+            switch (message) {
+                case Strings.refreshIDs: {
 
                     return addCurrentIDs(DatabaseConnection.getMyConn());
                 }
-                case Strings.showCardsForUserRequest:{
-                    //TODO trimite cartelele spre user (intr-un arrayList)
-                    break;
+                case Strings.showCardsForUserRequest: {
+                    // trimite cartelele spre user (intr-un arrayList)
+                    return carteleFromDB(DatabaseConnection.getMyConn());
+
                 }
             }
         }
@@ -165,10 +185,91 @@ public class ServerController {
 
     }
 
+    private static void subtractOneFromCardInDB(CartelaConsum cartela, Connection myConn) {
+        try{
+            String query = "SELECT * FROM cartele WHERE ID = ?";
+            PreparedStatement prepSt = myConn.prepareStatement(query);
+            prepSt.setLong(1, cartela.getId());
+            ResultSet rs = prepSt.executeQuery();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Cartela existsInDB(Cartela cartela, Connection myConn) {
+        try {
+            String query = "SELECT * FROM cartele WHERE ID = ?";
+            PreparedStatement prepSt = myConn.prepareStatement(query);
+            prepSt.setLong(1, cartela.getId());
+            ResultSet rs = prepSt.executeQuery();
+            if (rs.next()) {
+                if (rs.getString("Tip").equals("Abonament")) {
+                    Abonament ab = extractAbonamentFromResultSet(rs);
+                    prepSt.close();
+                    rs.close();
+                    return ab;
+                } else {
+                    CartelaConsum cc = extractCartelaFromResultSet(rs);
+                    prepSt.close();
+                    rs.close();
+                    return cc;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static Abonament extractAbonamentFromResultSet(ResultSet rs) throws SQLException {
+        Abonament abonament = new Abonament();
+        SimpleDateFormat sdf = new SimpleDateFormat(Strings.dateFormatString);
+        Date startDate, endDate;
+        abonament.manualId(rs.getLong("ID"));
+        startDate = rs.getDate("StartDate");
+        endDate = rs.getDate("EndDate");
+        abonament.setValabilitate(new Valabilitate(startDate, endDate));
+        abonament.setTip();
+        return abonament;
+    }
+
+    private static CartelaConsum extractCartelaFromResultSet(ResultSet rs) throws SQLException {
+        CartelaConsum cc = new CartelaConsum();
+        cc.setNrCalatorii(rs.getInt("NrCalatorii"));
+        cc.manualId(rs.getLong("ID"));
+        cc.setTip();
+        return cc;
+    }
 
 
+    private static LinkedList<Cartela> carteleFromDB(Connection myConn) {
+        LinkedList<Cartela> cartele = new LinkedList<>();
+        String query = "select * from cartele;";
+        try {
+            Statement statement = myConn.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                if (resultSet.getString("Tip").equals("Abonament")) {
+                    Abonament ab = extractAbonamentFromResultSet(resultSet);
+                    cartele.add(ab);
+                } else {
+                    CartelaConsum cc = extractCartelaFromResultSet(resultSet);
+                    cartele.add(cc);
+                }
+            }
+            resultSet.close();
+            statement.close();
 
-    public synchronized static void addAbonamentToDB (Abonament abonament){
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cartele;
+    }
+
+
+    public synchronized static void addAbonamentToDB(Abonament abonament) {
 
         try {
 
@@ -196,7 +297,7 @@ public class ServerController {
         }
     }
 
-    public synchronized static void addCartelaConsumToDB (CartelaConsum cartelaConsum){
+    public synchronized static void addCartelaConsumToDB(CartelaConsum cartelaConsum) {
         try {
 
             Connection myConn = DatabaseConnection.getMyConn();
@@ -211,6 +312,16 @@ public class ServerController {
             statement.executeUpdate(st);
 
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized static void removeCardFromDB(Cartela cartela){
+        try {
+            Statement statement = dbConnection.getMyConn().createStatement();
+            String query = "DELETE FROM cartele WHERE ID = " + cartela.getId();
+            statement.executeUpdate(query);
         } catch (SQLException e) {
             e.printStackTrace();
         }

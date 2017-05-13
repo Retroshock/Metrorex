@@ -2,6 +2,8 @@ package Client.Controller;
 
 import Client.Constants.Strings;
 import Client.Model.*;
+import Client.View.BuyMenu;
+import Client.View.ContCurent;
 import Client.View.PaintView;
 
 import javax.swing.*;
@@ -18,13 +20,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 
 /**
  * Created by Adrian on 19.04.2017.
  */
 public class Controller {
-    private static ArrayList<Abonament> abonamente= new ArrayList <>();
-    private static ArrayList<CartelaConsum> cartele= new ArrayList <>();
+    private static ArrayList<Abonament> abonamente = new ArrayList<>();
+    private static ArrayList<CartelaConsum> cartele = new ArrayList<>();
     private static PaintView view;
     private ActionListeners actionListeners;
     private static Socket socket;
@@ -39,12 +42,10 @@ public class Controller {
             public void run() {
                 view = new PaintView();
 
-                JButton buttonMonth = view.getClientInterface().getBuyMenu().getBuyMonthBtn();
-                JButton buttonDay = view.getClientInterface().getBuyMenu().getBuyDayBtn();
-                JButton buttonTen= view.getClientInterface().getBuyMenu().getBuyTenBtn();
-                JButton buttonTwo = view.getClientInterface().getBuyMenu().getBuyTwoBtn();
-
-                actionListeners = new ActionListeners(buttonMonth,buttonDay,buttonTen,buttonTwo);
+                BuyMenu buyMenu = view.getClientInterface().getBuyMenu();
+                ContCurent contCurent = view.getClientInterface().getContCurent();
+                updateContCurentFromDB();
+                actionListeners = new ActionListeners(buyMenu, contCurent );
             }
         }).start();
 
@@ -53,7 +54,7 @@ public class Controller {
             @Override
             public void run() {
                 initIDs();
-                updateContCurentFromDB();
+
 
                 //closeConnectionToServer();
             }
@@ -76,16 +77,13 @@ public class Controller {
             objectInputStream.close();
             objectOutputStream.close();
         } catch (IOException e) {
-            System.out.println("Eroare la Inchidere Socket!");
+            view.getClientInterface().getResponseFromServer().setText("Eroare la Inchidere Socket!");
             e.printStackTrace();
         }
     }
 
 
-
-
-
-    public static void sendRequestToServer (Cartela cartela){
+    static void sendRequestToServer(Cartela cartela) {
         try {
             socket = new Socket("localhost", 9002);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -105,20 +103,8 @@ public class Controller {
         }
     }
 
-    public static void sendExitRequestToServer(String exit){
-        try {
-            socket = new Socket("localhost", 9002);
-            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectOutputStream.writeObject(exit);
-            objectOutputStream.flush();
-            objectOutputStream.close();
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static void sendRequestToServer(String string){
+    static void sendRequestToServer(String string) {
         try {
             socket = new Socket("localhost", 9002);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -139,45 +125,87 @@ public class Controller {
         }
     }
 
+    public static void sendExitRequestToServer(String exit) {
+        try {
+            socket = new Socket("localhost", 9002);
+            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            objectOutputStream.writeObject(exit);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private static void processResponse(Object ob) {
         //TODO Proceseaza response de la server
-        if (ob instanceof Cartela){
+        if (ob instanceof Cartela) {
 
         }
-        if (ob instanceof String){
-
+        if (ob instanceof String) {
+            switch ((String)ob){
+                case Strings.cannotValidateForNowString: {
+                    view.getClientInterface().getResponseFromServer().setText(Strings.cannotValidateForNowString);
+                    break;
+                }
+                case Strings.cardValidatedString: {
+                    view.getClientInterface().getResponseFromServer().setText(Strings.cardValidatedString);
+                    break;
+                }
+                case Strings.cardDoesNotExistInDB: {
+                    view.getClientInterface().getResponseFromServer().setText(Strings.cardDoesNotExistInDB);
+                    break;
+                }
+                case Strings.expiredCardString: {
+                    view.getClientInterface().getResponseFromServer().setText(Strings.expiredCardString);
+                    break;
+                }
+            }
         }
-        if (ob instanceof ArrayList){
+        if (ob instanceof ArrayList) {
             ArrayList<Long> IDs = (ArrayList<Long>) ob;
             IDCounters.monthId = IDs.get(0);
             IDCounters.dayId = IDs.get(1);
             IDCounters.tenId = IDs.get(2);
             IDCounters.twoId = IDs.get(3);
         }
+        if (ob instanceof LinkedList){
+            LinkedList<Cartela> cartele = (LinkedList<Cartela>) ob;
+            for (Cartela x:cartele){
+                if (x instanceof Abonament){
+                    addAbonamentToInterface((Abonament)x);
+                } else if (x instanceof CartelaConsum){
+                    addCartelaToInterface((CartelaConsum)x);
+                }
+            }
+        }
     }
 
 
-
-
-
-    public synchronized static void addAbonamentToInterface (Abonament abonament){
+    synchronized static void addAbonamentToInterface(Abonament abonament) {
         abonamente.add(abonament);
         SimpleDateFormat sdf = new SimpleDateFormat(Strings.dateFormatString);
-        view.getClientInterface().getContCurent().updateEntries(new Object[] {abonament.getId(), "Abonament",
+        view.getClientInterface().getContCurent().updateEntries(new Object[]{abonament.getId(), "Abonament",
                 sdf.format(abonament.getValabilitate().getEnd())
                 , ""
                 , sdf.format(abonament.getValabilitate().getStart())});
+        BuyMenu buyMenu = view.getClientInterface().getBuyMenu();
+        ContCurent contCurent = view.getClientInterface().getContCurent();
 
+        ActionListeners.getTableSelectionAndAdd(contCurent,buyMenu);
     }
 
-    public synchronized static void addCartelaToInterface (CartelaConsum cartelaConsum){
+    synchronized static void addCartelaToInterface(CartelaConsum cartelaConsum) {
         cartele.add(cartelaConsum);
-        view.getClientInterface().getContCurent().updateEntries(new Object[] {cartelaConsum.getId(), "Cartela"
-                , "" +
-                cartelaConsum.getNrCalatorii()
-                , "" });
+        view.getClientInterface().getContCurent().updateEntries(new Object[]{cartelaConsum.getId(), "Cartela" , "",
+                cartelaConsum.getNrCalatorii(), ""
+        });
+        BuyMenu buyMenu = view.getClientInterface().getBuyMenu();
+        ContCurent contCurent = view.getClientInterface().getContCurent();
+
+        ActionListeners.getTableSelectionAndAdd(contCurent,buyMenu);
     }
 
 

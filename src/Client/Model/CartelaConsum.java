@@ -10,6 +10,10 @@ public class CartelaConsum extends Cartela {
     private Type tip;
     private int nrCalatorii;
 
+    public CartelaConsum(){
+
+    }
+
     public CartelaConsum(int nrCalatorii){
         this.nrCalatorii = nrCalatorii;
         if (nrCalatorii == 2)
@@ -31,6 +35,17 @@ public class CartelaConsum extends Cartela {
         this.nrCalatorii = nrCalatorii;
     }
 
+    public void setTip(Type tip) {
+        this.tip = tip;
+    }
+
+    public void setTip(){
+        if (nrCalatorii == 2)
+            tip = Type.Two;
+        else
+            tip = Type.Ten;
+    }
+
     @Override
     protected void setId() {
         try {
@@ -38,6 +53,10 @@ public class CartelaConsum extends Cartela {
         } catch (OutOfIDsException e) {
             e.printStackTrace();
         }
+    }
+
+    public void manualId(long id){
+        this.id = id;
     }
 
     public boolean useOne (){

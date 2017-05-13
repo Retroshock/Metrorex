@@ -1,5 +1,7 @@
 package Client.View;
 
+import Client.Model.Cartela;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -9,9 +11,9 @@ import java.awt.*;
  */
 public class ContCurent extends JPanel {
 
-    public DefaultTableModel columnModel;
+    private DefaultTableModel columnModel;
     private JLabel title;
-    public JTable table;
+    private JTable table;
     private JScrollPane scrollPane;
 
     public ContCurent(){
@@ -46,9 +48,6 @@ public class ContCurent extends JPanel {
         scrollPane.setVisible(true);
         this.add(scrollPane, constraints);
 
-        updateEntries(new Object[] {10, "Cartela", "null", 2, "20/10/2014"});
-        updateEntries(new Object[] {10, "Abonament", "19/11/2014", "null", "20/10/2014"});
-        updateEntries(new Object[] {10, "Cartela", "null", 2, "20/10/2014"});
 
     }
 
@@ -58,6 +57,14 @@ public class ContCurent extends JPanel {
         table.sizeColumnsToFit(JTable.AUTO_RESIZE_ALL_COLUMNS);
         //scrollPane.removeAll();
         scrollPane.setViewportView(table);
+    }
+
+    public DefaultTableModel getColumnModel() {
+        return columnModel;
+    }
+
+    public JTable getTable() {
+        return table;
     }
 
 }

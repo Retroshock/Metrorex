@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by Adrian on 15.04.2017.
  */
 public abstract class Cartela implements Serializable{
-    protected long id;
+    protected long id ;
     private String message = new String ();
 
     protected abstract void setId();

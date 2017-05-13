@@ -10,6 +10,8 @@ public class ClientInterface extends JPanel{
 
     private BuyMenu buyMenu;
     private ContCurent contCurent;
+    private JTextField responseFromServer;
+
     public ClientInterface(){
         this.setLayout(new GridBagLayout());
 
@@ -33,6 +35,18 @@ public class ClientInterface extends JPanel{
         constraints.gridy = 0;
         constraints.fill = GridBagConstraints.BOTH;
         this.add(contCurent, constraints);
+
+        responseFromServer = new JTextField();
+        responseFromServer.setEditable(false);
+        responseFromServer.setFont(new Font("Courier New", Font.PLAIN, 17));
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.ipady = 20;
+        constraints.gridy = 1;
+        constraints.gridwidth = 2;
+        constraints.fill = GridBagConstraints.BOTH;
+        this.add(responseFromServer, constraints);
+
     }
 
 
@@ -48,5 +62,9 @@ public class ClientInterface extends JPanel{
 
     public ContCurent getContCurent() {
         return contCurent;
+    }
+
+    public JTextField getResponseFromServer() {
+        return responseFromServer;
     }
 }
