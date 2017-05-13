@@ -140,7 +140,8 @@ public class ActionListeners {
                 cartela.manualId((Long) contCurent.getTable().getValueAt(selectedRow, 0));
                 if (cartela.getId() != 0) {
                     Integer nrCalatorii;
-                    if ((nrCalatorii = (Integer) contCurent.getTable().getValueAt(selectedRow, 3)) != null){
+                    if  (contCurent.getTable().getValueAt(selectedRow, 3) instanceof Integer){
+                        nrCalatorii = (Integer) contCurent.getTable().getValueAt(selectedRow, 3);
                         if (nrCalatorii > 0){
                             cartela.setNrCalatorii(nrCalatorii);
                             cartela.useOne();
