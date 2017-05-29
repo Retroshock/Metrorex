@@ -12,6 +12,8 @@ import javax.xml.transform.Result;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
 import java.sql.*;
@@ -45,7 +47,8 @@ public class Controller {
                 BuyMenu buyMenu = view.getClientInterface().getBuyMenu();
                 ContCurent contCurent = view.getClientInterface().getContCurent();
                 updateContCurentFromDB();
-                actionListeners = new ActionListeners(buyMenu, contCurent );
+                actionListeners = new ActionListeners(buyMenu, contCurent, view);
+
             }
         }).start();
 
@@ -71,13 +74,13 @@ public class Controller {
         sendRequestToServer(Strings.showCardsForUserRequest);
     }
 
-    private void closeConnectionToServer() {
+    private static void closeConnectionToServer() {
         try {
             socket.close();
             objectInputStream.close();
             objectOutputStream.close();
         } catch (IOException e) {
-            view.getClientInterface().getResponseFromServer().setText("Eroare la Inchidere Socket!");
+            //view.getClientInterface().getResponseFromServer().setText("Eroare la Inchidere Socket!");
             e.printStackTrace();
         }
     }
@@ -164,6 +167,10 @@ public class Controller {
                 }
                 case Strings.outOfRidesString: {
                     view.getClientInterface().getResponseFromServer().setText(Strings.outOfRidesString);
+                    break;
+                }
+                case Strings.exitRequest: {
+                    closeConnectionToServer();
                     break;
                 }
 

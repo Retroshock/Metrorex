@@ -32,25 +32,27 @@ public class ServerController {
 
 
             while (true) {
-
                 socket = serverSocket.accept();
                 objectInputStream = new ObjectInputStream(socket.getInputStream());
                 Object input = null;
                 try {
                     input = objectInputStream.readObject();
-                    if (input instanceof String) {
-                        if (((String) input).equals(Strings.exitRequest)) {
-                            objectInputStream.close();
-                            socket.close();
-                            break;
-                        }
-                    }
+
+
                     Object output = processRequest(input);
                     objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                     objectOutputStream.writeObject(output);
                     objectInputStream.close();
                     objectOutputStream.close();
                     socket.close();
+                    if (input instanceof String) {
+                        String strg = (String) input;
+                        if (Objects.equals(strg, Strings.exitRequest)){
+                            serverSocket.close();
+                            break;
+                        }
+                    }
+//
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -188,6 +190,16 @@ public class ServerController {
                 case Strings.showCardsForUserRequest: {
                     // trimite cartelele spre user (intr-un arrayList)
                     return carteleFromDB(DatabaseConnection.getMyConn());
+
+                }
+                case Strings.exitRequest: {
+                    try {
+                        DatabaseConnection.getMyConn().close();
+                        return Strings.exitRequest;
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    return Strings.exitRequest;
 
                 }
             }

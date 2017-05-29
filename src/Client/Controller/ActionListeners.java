@@ -8,6 +8,7 @@ import Client.Model.CartelaConsum;
 import Client.Model.Valabilitate;
 import Client.View.BuyMenu;
 import Client.View.ContCurent;
+import Client.View.PaintView;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -21,23 +22,32 @@ import java.util.Date;
 
 public class ActionListeners {
 
-    private static Cartela validationCard;
     private static int selectedRow;
 
-    public ActionListeners() {
-
-    }
-
-    public ActionListeners(BuyMenu buyMenu, ContCurent contCurent) {
+    public ActionListeners(BuyMenu buyMenu, ContCurent contCurent, PaintView view) {
         setDaily(buyMenu.getBuyDayBtn());
         setMonthly(buyMenu.getBuyMonthBtn());
         setTen(buyMenu.getBuyTenBtn());
         setTwo(buyMenu.getBuyTwoBtn());
         setValidation(buyMenu, contCurent);
         getTableSelectionAndAdd(contCurent, buyMenu);
+        setOnCloseOperation(view);
     }
 
-    public static void setMonthly(JButton button) {
+    private static void setOnCloseOperation(PaintView view){
+        view.getCiFrame().addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                Controller.sendRequestToServer(Strings.exitRequest);
+                System.out.println("Closed");
+                e.getWindow().dispose();
+            }
+        });
+    }
+
+    private static void setMonthly(JButton button) {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -59,7 +69,7 @@ public class ActionListeners {
         });
     }
 
-    public static void setDaily(JButton button) {
+    private static void setDaily(JButton button) {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -76,7 +86,7 @@ public class ActionListeners {
         });
     }
 
-    public static void setTen(JButton button) {
+    private static void setTen(JButton button) {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -131,7 +141,7 @@ public class ActionListeners {
     }
 
 
-    public static void setValidation(BuyMenu buyMenu, ContCurent contCurent) {
+    private static void setValidation(BuyMenu buyMenu, ContCurent contCurent) {
 
         buyMenu.getValidationBtn().addActionListener(new ActionListener() {
             @Override

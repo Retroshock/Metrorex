@@ -1,8 +1,11 @@
 package Client.View;
 
+import Client.Controller.Controller;
 import Client.View.ClientInterface;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Created by Adrian on 17.04.2017.
@@ -10,6 +13,7 @@ import javax.swing.*;
 public class PaintView {
 
     private ClientInterface clientInterface;
+    private JFrame ciFrame;
 
     public PaintView(){
 
@@ -18,18 +22,22 @@ public class PaintView {
 
     public void paintOnScreen () {
         clientInterface = new ClientInterface();
-        JFrame ci = new JFrame();
-        ci.add(clientInterface);
-        ci.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ciFrame = new JFrame();
+        ciFrame.add(clientInterface);
+        ciFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
         //ci.setBounds(100,200,800,500);
-        ci.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        ciFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         //ci.setUndecorated(true);
-        ci.setVisible(true);
+        ciFrame.setVisible(true);
     }
 
     public ClientInterface getClientInterface() {
         return clientInterface;
+    }
+
+    public JFrame getCiFrame() {
+        return ciFrame;
     }
 }
