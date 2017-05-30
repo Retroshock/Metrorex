@@ -29,8 +29,6 @@ public class ServerController {
 
 
             serverSocket = new ServerSocket(9002);
-
-
             while (true) {
                 socket = serverSocket.accept();
                 objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -55,6 +53,8 @@ public class ServerController {
 //
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
+                    socket.close();
+                    serverSocket.close();
                 }
 
             }
@@ -215,6 +215,7 @@ public class ServerController {
             prepSt.setInt(1, cartela.getNrCalatorii());
             prepSt.setLong(2, cartela.getId());
             prepSt.executeUpdate();
+            prepSt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -313,6 +314,7 @@ public class ServerController {
                     "' );";
 
             statement.executeUpdate(st);
+            statement.close();
 
 
         } catch (SQLException e) {
@@ -334,7 +336,7 @@ public class ServerController {
 
             statement.executeUpdate(st);
 
-
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -345,6 +347,7 @@ public class ServerController {
             Statement statement = dbConnection.getMyConn().createStatement();
             String query = "DELETE FROM cartele WHERE ID = " + cartela.getId();
             statement.executeUpdate(query);
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
